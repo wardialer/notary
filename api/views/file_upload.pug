@@ -1,0 +1,10 @@
+html
+    head
+        title File uploads
+    body
+        form(action = "/document" method = "POST" enctype = "multipart/form-data")
+            div
+                input(type = "file" name = "document")
+
+            div
+                input(type = "submit")
