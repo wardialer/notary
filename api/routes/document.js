@@ -32,7 +32,7 @@ module.exports = ({ router }) => {
       */
     }
 
-    console.log(bitcoinLib.createUri(result.amount, result.address))
+    console.log(bitcoinLib.createUri(result.amount, result.address));
     fs.unlink(file.path);
     ctx.body = result;
   });
