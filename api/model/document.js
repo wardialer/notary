@@ -5,6 +5,7 @@ const documentSchema = new mongoose.Schema({
   hash: String,
   address: String,
   amount: Number,
+  sequence: Number,
   transaction: Object,
   transactionId: String,
 });

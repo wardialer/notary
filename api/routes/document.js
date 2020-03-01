@@ -7,10 +7,8 @@ const bitcore = explorersMod.require('bitcore-lib');
 
 const { HDPrivateKey } = bitcore;
 
-// bitcore.Networks.defaultNetwork = bitcore.Networks.testnet;
-
 const Model = require('../model/document');
-const Address = require('../model/address');
+// const Address = require('../model/address');
 const seed = require('../libs/seed');
 
 const algo = 'sha256';
@@ -18,81 +16,93 @@ const hdPrivateKey = new HDPrivateKey('xprv9s21ZrQH143K3bydobdBf4fHAE4AWuJXd8miZ
 const { privateKey } = hdPrivateKey.derive(0);
 const insight = new explorers.Insight();
 
-async function generateTransaction(hash) {
-  const address = privateKey.toAddress();
-
-  const s = await seed.get();
-  const receiver = hdPrivateKey.derive(1).derive(1).derive(s).privateKey.toAddress();
-
-  const a = new Address({
-    address: receiver,
-
-  })
-
-
-  return new Promise((resolve, reject) => {
-    insight.getUnspentUtxos(address, (err, utxos) => {
-      if (err || utxos.length === 0) {
-        reject(err || 'insufficient funds');
-      } else {
-        console.log({
-          utxos,
-        });
-
-
-        const totalAmount = utxos
-          .map((utxo) => utxo.satoshis)
-          .reduce((accumulator, current) => accumulator + current, +0);
-
-        const amount = totalAmount - 667;
-
-        const transaction = new bitcore.Transaction()
-          .from(utxos)
-          .change(address)
-          .to(receiver, amount)
-          .addData(hash)
-          .sign(privateKey);
-
-        try {
-          transaction.serialize();
-          resolve(transaction.toObject());
-        } catch (error) {
-          reject(error);
-        }
-      }
-    });
-  });
-}
-
 async function generateFunding() {
-  const s = await seed.get();
-  const receiver = hdPrivateKey.derive(1).derive(1).derive(s).privateKey.toAddress();
+  const sequence = await seed.get();
+  const derived = hdPrivateKey.derive(sequence);
+  const { hdPublicKey } = derived;
+
+  const receiver = hdPublicKey.publicKey.toAddress();
 
   return ({
     address: receiver,
+    sequence,
     amount: 25000, // in satoshis
   });
 }
 
+function managePayment(address) {
+  const filter = { address };
+
+  return new Promise((resolve, reject) => {
+    Model.findOne(filter)
+      .then((doc) => {
+        const derived = hdPrivateKey.derive(doc.sequence);
+
+        insight.getUnspentUtxos(address, (err, utxos) => {
+          if (err) {
+            reject(err);
+          } else {
+            const total = utxos
+              .map((e) => e.satoshis)
+              .reduce((a, c) => a + c, +0);
+
+            // TODO: do not repeat the TX if already done!
+            if (doc.transactionId) {
+              resolve(`Notarized in transaction ${doc.transactionId}`);
+            } else if (total >= doc.amount) {
+              const tx = new bitcore.Transaction()
+                .from(utxos)
+                .to(privateKey.toAddress(), total - 700)
+                .addData(`Notarized: ${doc.hash}`)
+                .fee(700)
+                .sign(derived.privateKey);
+
+              console.log(tx.serialize());
+
+
+              Model.findOneAndUpdate(filter, { transaction: tx })
+                .then(() => {
+                  insight.broadcast(tx, (e, t) => {
+                    if (e) {
+                      reject(e);
+                    } else {
+                      Model.findOneAndUpdate(filter, { transactionId: t })
+                        .then(() => resolve(t))
+                        .catch(resolve);
+                    }
+                  });
+                })
+                .catch(reject);
+            } else {
+              resolve('Still Waiting');
+            }
+          }
+        });
+      })
+      .catch(reject);
+  });
+}
+/*
 function fileHandler(file) {
   const shasum = crypto.createHash(algo);
   const stream = fs.ReadStream(file.path);
 
 
   return new Promise((resolve, reject) => {
-    stream.on('data', (data) => { shasum.update(data); });
+    stream.on('data', (data) => {
+      shasum.update(data);
+    });
 
     stream.on('end', async () => {
       const hash = shasum.digest('hex');
 
       try {
-        const transaction = await generateTransaction(hash);
         const funding = await generateFunding();
 
         const doc = new Model({
           hash,
           fileName: file.name,
-          transaction,
+          sequence: funding.sequence,
           amount: funding.amount,
           address: funding.address,
         });
@@ -110,6 +120,55 @@ function fileHandler(file) {
     });
   });
 }
+*/
+function generateHash(file) {
+  const shasum = crypto.createHash(algo);
+
+
+  return new Promise((resolve, reject) => {
+    try {
+      const stream = fs.ReadStream(file.path);
+
+      stream.on('data', (data) => {
+        shasum.update(data);
+      });
+
+      stream.on('end', async () => {
+        const hash = shasum.digest('hex');
+
+        resolve(hash);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+async function saveDocument(hash, file) {
+  const funding = await generateFunding();
+
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new Model({
+        hash,
+        fileName: file.name,
+        sequence: funding.sequence,
+        amount: funding.amount,
+        address: funding.address,
+      });
+
+      doc.save((err, document) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(document);
+        }
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
 
 module.exports = ({ router }) => {
   router.get('/', async (ctx) => {
@@ -120,56 +179,38 @@ module.exports = ({ router }) => {
     const { files } = ctx.request;
     const file = files.document;
 
-    const result = await fileHandler(file);
-    fs.unlink(file.path);
+    const hash = await generateHash(file);
 
-    // https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl= 12kQMUkB9QJu9X5JP9H9M2qMUmrGtDakkV
-    // ctx.body = JSON.stringify(`Transaction created. ${result.fundingTransaction}`);
+    const document = await Model.findOne({ hash });
 
-    const uriString = new bitcore.URI({
-      amount: result.amount,
-      address: result.address,
-    });
+    if (document !== null) {
+      ctx.body = document;
+    } else {
+      const result = await saveDocument(hash, file);
 
-    await ctx.render('qr_code', { string: uriString.toString() });
+      fs.unlink(file.path);
+
+      // https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl= 12kQMUkB9QJu9X5JP9H9M2qMUmrGtDakkV
+      // ctx.body = JSON.stringify(`Transaction created. ${result.fundingTransaction}`);
+
+      const uriString = new bitcore.URI({
+        amount: result.amount,
+        address: result.address,
+      });
+
+      await ctx.render('qr_code', { string: uriString.toString() });
+    }
   });
 
 
-  router.get('/listener', async (ctx) => {
-    const address = '1FADueLAsFmSi1s92SoTgh94u2H49bYagi';
-    const doc = await Model.findOne({ address });
+  router.get('/:address', async (ctx) => {
+    const { address } = ctx.params;
 
-
-    async function managePayment(result) {
-      insight.getUnspentUtxos(result.address, (err, utxos) => {
-        if (err) {
-          ctx.body = err;
-          console.log(err);
-        } else {
-          const totalAmount = utxos
-            .map((utxo) => utxo.satoshis)
-            .reduce((accumulator, current) => accumulator + current, +0);
-
-          if (totalAmount >= result.amount) {
-            const transaction = new bitcore.Transaction(result.transaction);
-            insight.broadcast(transaction, (err2, returnedTxId) => {
-              if (err2) {
-                ctx.body = err2;
-                console.log(err2);
-              } else {
-                ctx.body = `Transaction ID: ${returnedTxId}`;
-                console.log(`Transaction ID: ${returnedTxId}`);
-              }
-            });
-          } else {
-            ctx.body = 'waiting payment';
-            console.log('waiting payment');
-          }
-        }
-      });
+    try {
+      const transaction = await managePayment(address);
+      ctx.body = transaction;
+    } catch (e) {
+      ctx.body = e;
     }
-
-    await managePayment(doc);
-    ctx.body = 'ok?';
   });
 };
