@@ -1,25 +1,20 @@
 const port = process.env.PORT || 3000;
 const development = process.env.NODE_ENV === 'development';
 
+const cron = require('cron');
 const Koa = require('koa');
 const Router = require('koa-router');
 const logger = require('koa-pino-logger');
 const bodyParser = require('koa-body');
-const Pug = require('koa-pug');
 const mongoose = require('mongoose');
+
+const bitcoinLib = require('./libs/bitcoin');
 
 mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
 const app = new Koa();
-
-const pug = new Pug({
-  viewPath: './views',
-  basedir: './views',
-});
-
-pug.use(app);
 
 app.use(bodyParser({
   formidable: { uploadDir: './uploads' },
@@ -53,5 +48,9 @@ app.use(router.allowedMethods());
 
 const server = app.listen(port);
 console.log(`The magic happens on port ${port}`);
+
+// processing the payment requests every 10 minutes
+const job = cron.job('*/10 * * * *', () => bitcoinLib.processPayments().then(console.log).catch(console.log));
+job.start();
 
 module.exports = server;
