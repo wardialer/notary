@@ -91,7 +91,7 @@ function managePayment(address) {
             })
             .catch(reject);
         } else {
-          resolve(`Please make a payment of ${document.amount} satoshis to ${address}`);
+          resolve(`A payment of ${document.amount} satoshis to ${address} is required`);
         }
       })
       .catch(reject);
@@ -107,8 +107,22 @@ function createUri(amount, address) {
   return uriString;
 }
 
+async function processPayments() {
+  const documents = await Document.find({ transactionId: { $exists: false } });
+
+  const promises = documents
+    .map((document) => managePayment(document.address));
+
+  return new Promise((resolve, reject) => {
+    Promise.all(promises)
+      .then(resolve)
+      .catch(reject);
+  });
+}
+
 module.exports = {
   generateFunding,
   managePayment,
   createUri,
+  processPayments,
 };

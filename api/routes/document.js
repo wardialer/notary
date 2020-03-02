@@ -2,12 +2,13 @@ const fs = require('fs');
 
 const Document = require('../model/document');
 const hashLib = require('../libs/hash');
-const bitcoinLib = require('../libs/bitcoin');
 const documentLib = require('../libs/document');
 
 module.exports = ({ router }) => {
   router.get('/', async (ctx) => {
-    await ctx.render('file_upload');
+    const results = await Document.find();
+
+    ctx.body = results;
   });
 
   router.post('/', async (ctx) => {
@@ -15,9 +16,7 @@ module.exports = ({ router }) => {
     const file = files.document;
 
     const hash = await hashLib.generateHash(file);
-
     const document = await Document.findOne({ hash });
-
 
     let result;
 
@@ -32,19 +31,15 @@ module.exports = ({ router }) => {
       */
     }
 
-    console.log(bitcoinLib.createUri(result.amount, result.address));
+    // console.log(bitcoinLib.createUri(result.amount, result.address));
     fs.unlink(file.path);
     ctx.body = result;
   });
 
-  router.get('/:address', async (ctx) => {
-    const { address } = ctx.params;
+  router.get('/:hash', async (ctx) => {
+    const { hash } = ctx.params;
+    const result = await Document.findOne({ hash });
 
-    try {
-      const message = await bitcoinLib.managePayment(address);
-      ctx.body = message;
-    } catch (e) {
-      ctx.body = e;
-    }
+    ctx.body = result;
   });
 };
