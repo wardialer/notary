@@ -1,22 +1,28 @@
 <template>
+  <div>
+    <hr class="mt-5"/>
+    <h2>Latest uploaded documents:</h2>
   <b-row cols="2">
     <b-col class="waiting">
-      <h2>Waiting:</h2>
-      <ul>
-        <li v-for="document in waitingDocuments" :key="document.hash">
-          <a :href="'/document/' + document.hash">{{document.address}}</a>
-        </li>
-      </ul>
+      <h4 class="mt-3 mb-3">Waiting for payment:</h4>
+      <b-list-group>
+        <b-list-group-item v-for="document in waitingDocuments" :key="document.hash"
+                           :href="'/document/' + document.hash" class="truncate">
+          {{document.hash}}
+        </b-list-group-item>
+      </b-list-group>
     </b-col>
     <b-col class="processed">
-      <h2>Processed:</h2>
-      <ul>
-          <li v-for="document in processedDocuments" :key="document.hash">
-            <a :href="'/document/' + document.hash">{{document.address}}</a>
-          </li>
-      </ul>
+      <h4 class="mt-3 mb-3">Processed:</h4>
+      <b-list-group>
+          <b-list-group-item v-for="document in processedDocuments" :key="document.hash"
+                             :href="'/document/' + document.hash" class="truncate">
+            {{document.hash}}
+          </b-list-group-item>
+      </b-list-group>
     </b-col>
   </b-row>
+  </div>
 </template>
 
 <script>
@@ -42,13 +48,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  ul li {
-    padding: 20px;
-    background: #E9E9E9;
-    margin-bottom: 8px;
+  .truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>

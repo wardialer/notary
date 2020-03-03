@@ -1,15 +1,17 @@
 <template>
-  <b-container>
+  <div>
     <card v-if="response" :id="response.hash"></card>
-    <drop class="drop" @drop="handleDrop">Drop files</drop>
-    <div>{{ fileName }}</div>
-    <b-button :disabled="!fileName" class="m-2" variant="outline-primary" @click="uploadFiles()">
-      Upload
-    </b-button>
-    <b-button :disabled="!fileName" class="m-2" variant="outline-danger" @click="removeFiles()">
-      Remove
-    </b-button>
-  </b-container>
+    <drop class="drop" @drop="handleDrop">{{message}}</drop>
+    <div v-show="fileName !== null" class="mt-3 mb-3">
+      <div>{{ fileName }}</div>
+      <b-button :disabled="!fileName" class="m-2" variant="outline-primary" @click="uploadFiles()">
+        Upload
+      </b-button>
+      <b-button :disabled="!fileName" class="m-2" variant="outline-danger" @click="removeFiles()">
+        Remove
+      </b-button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -28,6 +30,7 @@ export default {
       files: [],
       fileName: null,
       response: null,
+      message: 'Upload your file using drag & drop.',
     };
   },
   methods: {
@@ -43,6 +46,7 @@ export default {
       this.response = null;
     },
     uploadFiles() {
+      this.response = null;
       const formData = new FormData();
 
       for (let i = 0; i < this.files.length; i += 1) {
@@ -59,6 +63,8 @@ export default {
           },
         }).then((response) => {
         this.response = response.data;
+        this.fileName = null;
+        this.files = [];
       })
         .catch((error) => {
           console.log(error);
@@ -74,5 +80,6 @@ export default {
     margin: 1em;
     border: 3px dashed #42b983;
     border-radius: 4px;
+    background: #E9E9E9;
   }
 </style>

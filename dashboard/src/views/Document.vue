@@ -1,8 +1,8 @@
 <template>
-    <b-row cols="1">
+  <b-container>
       <child></child>
       <list></list>
-    </b-row>
+  </b-container>
 </template>
 
 <script>

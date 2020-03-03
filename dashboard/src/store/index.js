@@ -9,8 +9,10 @@ export default new Vuex.Store({
     documents: [],
   },
   getters: {
-    processedDocuments: (state) => state.documents.filter((document) => document.transactionId),
-    waitingDocuments: (state) => state.documents.filter((document) => !document.transactionId),
+    processedDocuments: (state) => state.documents.filter((document) => document.transactionId)
+      .slice(-10),
+    waitingDocuments: (state) => state.documents.filter((document) => !document.transactionId)
+      .slice(-10),
   },
   mutations: {
     SET_DOCUMENT_LIST: (state, { list }) => {
