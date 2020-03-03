@@ -3,6 +3,7 @@ const development = process.env.NODE_ENV === 'development';
 
 const cron = require('cron');
 const Koa = require('koa');
+const cors = require('@koa/cors');
 const Router = require('koa-router');
 const logger = require('koa-pino-logger');
 const bodyParser = require('koa-body');
@@ -15,6 +16,7 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
 const app = new Koa();
+app.use(cors());
 
 app.use(bodyParser({
   formidable: { uploadDir: './uploads' },
