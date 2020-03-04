@@ -19,6 +19,9 @@ import { Drop } from 'vue-drag-drop';
 import Card from '@/components/Card.vue';
 import axios from 'axios';
 
+const host = process.env.VUE_APP_API || 'localhost';
+const port = process.env.VUE_APP_API_PORT || 3000;
+
 export default {
   name: 'Document',
   components: {
@@ -55,7 +58,7 @@ export default {
         formData.append('document', file);
       }
 
-      axios.post('http://localhost:3000/document/',
+      axios.post(`http://${host}:${port}/document/`,
         formData,
         {
           headers: {

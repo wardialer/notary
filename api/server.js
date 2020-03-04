@@ -1,4 +1,8 @@
+require('dotenv').config();
+
 const port = process.env.PORT || 3000;
+const databaseHost = process.env.DB_HOST || 'localhost';
+const databaseName = process.env.DB_NAME || 'bitcoin-notary';
 const development = process.env.NODE_ENV === 'development';
 
 const cron = require('cron');
@@ -11,7 +15,7 @@ const mongoose = require('mongoose');
 
 const bitcoinLib = require('./libs/bitcoin');
 
-mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(`mongodb://${databaseHost}/${databaseName}`, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
