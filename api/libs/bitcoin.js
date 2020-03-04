@@ -3,12 +3,15 @@ const explorers = require('bitcore-explorers');
 const explorersMod = require.cache[require.resolve('bitcore-explorers')];
 const bitcore = explorersMod.require('bitcore-lib');
 
+const keyString = process.env.PRIVATE_KEY;
+const defaultAmount = process.env.DEFAULT_AMOUNT || 25000;
+
 const seed = require('./seed');
 const Document = require('../model/document');
 
 const insight = new explorers.Insight();
 const { HDPrivateKey } = bitcore;
-const hdPrivateKey = new HDPrivateKey('xprv9s21ZrQH143K3bydobdBf4fHAE4AWuJXd8miZfUfokcLSxSRSXuDrvyMmVsJXM7qdLcVuAM9kkirDwpaPteGJTrCFicA2auFLEc8teW6v6d');
+const hdPrivateKey = new HDPrivateKey(keyString);
 const { privateKey } = hdPrivateKey.derive(0);
 
 async function generateFunding() {
@@ -21,7 +24,7 @@ async function generateFunding() {
   return ({
     address: receiver,
     sequence,
-    amount: 25000, // in satoshis
+    amount: defaultAmount, // in satoshis
   });
 }
 
