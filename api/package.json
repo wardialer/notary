@@ -4,7 +4,7 @@
   "description": "APIs for bitcoin-based notary system",
   "main": "server.js",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint . --fix",
     "pretest": "npm run lint",
     "predev": "npm run lint",
     "test": "jest --watchAll",
