@@ -3,15 +3,29 @@
 Notary is a Javascript implementation of a decentralized notary service using
 public Bitcoin blockchain.
 
-# Please note: the software is currently a WIP demo for internal testing purposes
+## Building
 
-## Installation
+Use [docker build](https://docs.docker.com/engine/reference/commandline/build/)
+to build the container images.
 
-TBD
+```bash
+docker build -f Dockerfile.api -t notary/api api
+docker build -f Dockerfile.dashboard -t notary/dashboard dashboard
+```
 
 ## Usage
 
-TBD
+Use [docker-compose](https://docs.docker.com/compose/) to run the containers.
+
+```bash
+docker-compose up -d
+```
+
+and to stop them
+
+```bash
+docker-compose down
+```
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

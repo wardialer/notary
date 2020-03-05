@@ -1,0 +1,47 @@
+# Official docker image.
+image: docker:latest
+
+services:
+  - docker:18.09.7-dind
+
+variables:
+  CI_REGISTRY_USER: "username"
+  CI_REGISTRY_PASSWORD: "password"
+  CI_REGISTRY: "localhost:5000"
+  API_IMAGE: "notary/api"
+  DASHBOARD_IMAGE: "notary/dashboard"
+
+  RANCHER_COMPOSE_DOWNLOAD: "http://releases.rancher.com/compose/v0.12.5/rancher-compose-linux-amd64-v0.12.5.tar.gz"
+  RANCHER_COMPOSE_TAR: "rancher-compose-linux-amd64-v0.12.5.tar.gz"
+  RANCHER_COMPOSE_DIR: "rancher-compose-v0.12.5"
+  STACK_NAME: "notary-cluster"
+
+  RANCHER_ACCESS_KEY: "E50FA9357716CE713F49"
+  RANCHER_SECRET_KEY: "XoAbZgUf46MJpY1APH6DVUg6DV5nJZRqvW4An4UH"
+  RANCHER_URL: "http://217.172.12.189:8080/v1/projects/1a5"
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
+stages:
+  - build
+  - publish
+  - deploy
+
+
+build:
+  stage: build
+  script:
+    - docker build --pull -f Dockerfile.api -t "$CI_REGISTRY"/"$API_IMAGE" api
+    - docker build --pull -f Dockerfile.dashboard -t "$CI_REGISTRY"/"$DASHBOARD_IMAGE" dashboard
+  only:
+    - master
+
+publish:
+  stage: publish
+  script:
+    - docker push "$CI_REGISTRY"/"$API_IMAGE"
+    - docker push "$CI_REGISTRY"/"$DASHBOARD_IMAGE"
+  only:
+    - master
+
