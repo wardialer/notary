@@ -1,10 +1,11 @@
 # Official docker image.
-image: docker:latest
+image: docker:stable
 
 services:
   - docker:18.09.7-dind
 
 variables:
+  DOCKER_DRIVER: overlay2
   CI_REGISTRY_USER: "username"
   CI_REGISTRY_PASSWORD: "password"
   CI_REGISTRY: "localhost:5000"
@@ -44,4 +45,3 @@ publish:
     - docker push "$CI_REGISTRY"/"$DASHBOARD_IMAGE"
   only:
     - master
-
