@@ -8,8 +8,6 @@ services:
       - "80:80"
     environment:
       - "VUE_APP_API=localhost"
-    volumes:
-      - ./nginx.default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - api
   api:
