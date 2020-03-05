@@ -22,7 +22,7 @@ variables:
   RANCHER_URL: "http://217.172.12.189:8080/v1/projects/1a5"
 
 before_script:
-  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" localhost:5000
 
 stages:
   - build
