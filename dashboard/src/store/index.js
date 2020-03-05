@@ -6,6 +6,7 @@ Vue.use(Vuex);
 
 const host = process.env.VUE_APP_API || 'localhost';
 const port = process.env.VUE_APP_API_PORT || 3000;
+const endpoint = process.env.VUE_APP_API_ENDPOINT || '';
 
 export default new Vuex.Store({
   state: {
@@ -24,7 +25,7 @@ export default new Vuex.Store({
   },
   actions: {
     LOAD_DOCUMENT_LIST({ commit }) {
-      axios.get(`http://${host}:${port}/document/`)
+      axios.get(`http://${host}:${port}${endpoint}/document/`)
         .then((response) => {
           commit('SET_DOCUMENT_LIST', { list: response.data });
         })

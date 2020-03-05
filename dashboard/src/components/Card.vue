@@ -48,6 +48,7 @@ import bitcore from 'bitcore-lib';
 
 const host = process.env.VUE_APP_API || 'localhost';
 const port = process.env.VUE_APP_API_PORT || 3000;
+const endpoint = process.env.VUE_APP_API_ENDPOINT || '';
 
 export default {
   name: 'Card',
@@ -61,7 +62,7 @@ export default {
     };
   },
   mounted() {
-    axios.get(`http://${host}:${port}/document/${this.id}`)
+    axios.get(`http://${host}:${port}${endpoint}/document/${this.id}`)
       .then((documentResponse) => {
         this.document = documentResponse.data;
         this.title = this.document.transactionId
