@@ -1,8 +1,5 @@
 # Official docker image.
-image: docker:18.09.7-dind
-
-services:
-  - docker:18.09.7-dind
+image: docker:dind
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -25,23 +22,19 @@ before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
 
 stages:
+  - test
   - build
   - publish
   - deploy
-
 
 build:
   stage: build
   script:
     - docker build --pull -f Dockerfile.api -t "$CI_REGISTRY"/"$API_IMAGE" api
     - docker build --pull -f Dockerfile.dashboard -t "$CI_REGISTRY"/"$DASHBOARD_IMAGE" dashboard
-  only:
-    - master
 
 publish:
   stage: publish
   script:
     - docker push "$CI_REGISTRY"/"$API_IMAGE"
     - docker push "$CI_REGISTRY"/"$DASHBOARD_IMAGE"
-  only:
-    - master
