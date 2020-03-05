@@ -32,7 +32,12 @@ module.exports = ({ router }) => {
     }
 
     // console.log(bitcoinLib.createUri(result.amount, result.address));
-    fs.unlink(file.path);
+    fs.unlink(file.path, (err) => {
+      if (err) {
+        ctx.throw(500, 'FS problem', { err });
+      }
+    });
+
     ctx.body = result;
   });
 

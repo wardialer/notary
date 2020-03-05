@@ -21,6 +21,7 @@ import axios from 'axios';
 
 const host = process.env.VUE_APP_API || 'localhost';
 const port = process.env.VUE_APP_API_PORT || 3000;
+const endpoint = process.env.VUE_APP_API_ENDPOINT || '';
 
 export default {
   name: 'Document',
@@ -58,7 +59,7 @@ export default {
         formData.append('document', file);
       }
 
-      axios.post(`http://${host}:${port}/document/`,
+      axios.post(`http://${host}:${port}${endpoint}/document/`,
         formData,
         {
           headers: {
