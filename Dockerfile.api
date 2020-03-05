@@ -5,6 +5,8 @@ WORKDIR /home/node/app
 
 COPY package*.json ./
 
+RUN npm config set registry http://registry.npmjs.org/
+
 USER node
 RUN npm install --production --loglevel verbose
 COPY --chown=node:node . .
