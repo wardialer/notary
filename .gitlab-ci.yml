@@ -39,4 +39,17 @@ publish:
     - docker push "$CI_REGISTRY"/"$API_IMAGE"
     - docker push "$CI_REGISTRY"/"$DASHBOARD_IMAGE"
 
+deploy:
+  stage: deploy
+  script:
+    - wget $RANCHER_COMPOSE_DOWNLOAD #insecure, use https instead
+    - tar -zxvf $RANCHER_COMPOSE_TAR
+    - ls -l ./$RANCHER_COMPOSE_DIR/
+    - alias rancher-compose=$PWD/$RANCHER_COMPOSE_DIR/rancher-compose
+
+    - rancher-compose --debug -p $STACK_NAME --url $RANCHER_URL --access-key $RANCHER_ACCESS_KEY --secret-key $RANCHER_SECRET_KEY -f docker-compose.yml up --force-upgrade --pull -d
+    - rancher-compose --debug -p $STACK_NAME --url $RANCHER_URL --access-key $RANCHER_ACCESS_KEY --secret-key $RANCHER_SECRET_KEY -f docker-compose.yml up --confirm-upgrade -d
+  environment: "Default"
+  only:
+    - master
 
