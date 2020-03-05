@@ -2,7 +2,7 @@ version: "2"
 
 services:
   dashboard:
-    image: notary/dashboard
+    image: localhost:5000/notary/dashboard
     container_name: dashboard
     hostname: dashboard
     ports:
@@ -12,7 +12,7 @@ services:
     depends_on:
       - api
   api:
-    image: notary/api
+    image: localhost:5000/notary/api
     container_name: api
     hostname: api
     environment:
