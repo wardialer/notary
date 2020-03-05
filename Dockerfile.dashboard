@@ -5,6 +5,12 @@ WORKDIR /home/node/app
 
 COPY package*.json ./
 
+RUN apk --no-cache add --virtual native-deps \
+    g++ gcc libgcc libstdc++ linux-headers make python && \
+    npm install --quiet node-gyp -g &&\
+    npm install --quiet && \
+    apk del native-deps
+
 USER node
 RUN npm install --loglevel verbose
 COPY --chown=node:node . .
