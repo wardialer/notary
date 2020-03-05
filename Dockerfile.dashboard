@@ -6,7 +6,7 @@ WORKDIR /home/node/app
 COPY package*.json ./
 
 USER node
-RUN npm install
+RUN npm install --loglevel verbose
 COPY --chown=node:node . .
 
 RUN npm run build
