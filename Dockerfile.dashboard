@@ -9,9 +9,9 @@ RUN apk --no-cache add --virtual native-deps \
     g++ gcc libgcc libstdc++ linux-headers make python
 
 RUN npm install node-gyp -g --loglevel verbose
-
-USER node
 RUN npm install rxjs --loglevel verbose
+USER node
+
 RUN npm install --loglevel verbose
 COPY --chown=node:node . .
 
