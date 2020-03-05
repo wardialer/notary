@@ -3,6 +3,7 @@ version: "2"
 services:
   dashboard:
     image: notary/dashboard
+    container_name: dashboard
     hostname: dashboard
     ports:
       - "80:80"
@@ -12,6 +13,7 @@ services:
       - api
   api:
     image: notary/api
+    container_name: api
     hostname: api
     environment:
       - "DB_HOST=mongo"
@@ -19,4 +21,5 @@ services:
       - mongo
   mongo:
     image: mongo
+    container_name: mongo
     hostname: mongo
