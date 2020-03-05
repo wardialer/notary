@@ -11,6 +11,7 @@ RUN apk --no-cache add --virtual native-deps \
 RUN npm install node-gyp -g --loglevel verbose
 
 USER node
+RUN npm install rxjs --loglevel verbose
 RUN npm install --loglevel verbose
 COPY --chown=node:node . .
 
