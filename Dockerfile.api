@@ -6,7 +6,7 @@ WORKDIR /home/node/app
 COPY package*.json ./
 
 USER node
-RUN npm install --production
+RUN npm install --production --loglevel verbose
 COPY --chown=node:node . .
 
 EXPOSE 3000
