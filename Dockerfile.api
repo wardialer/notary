@@ -11,6 +11,8 @@ USER node
 RUN npm install --production
 COPY --chown=node:node . .
 
+RUN mkdir uploads
+
 EXPOSE 3000
 
 CMD [ "npm", "start" ]
