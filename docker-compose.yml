@@ -23,3 +23,8 @@ services:
     image: mongo
     container_name: mongo
     hostname: mongo
+    volumes:
+      - "mongo:/data/db"
+
+volumes: 
+  mongo:

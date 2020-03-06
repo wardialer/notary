@@ -1,48 +1,55 @@
-# Official docker image.
-image: docker:dind
-
-variables:
-  DOCKER_DRIVER: overlay2
-  CI_REGISTRY_USER: "username"
-  CI_REGISTRY_PASSWORD: "password"
-  CI_REGISTRY: "localhost:5000"
-  API_IMAGE: "notary/api"
-  DASHBOARD_IMAGE: "notary/dashboard"
-
-  RANCHER_COMPOSE_DOWNLOAD: "http://releases.rancher.com/compose/v0.12.5/rancher-compose-linux-amd64-v0.12.5.tar.gz"
-  RANCHER_COMPOSE_TAR: "rancher-compose-linux-amd64-v0.12.5.tar.gz"
-  RANCHER_COMPOSE_DIR: "rancher-compose-v0.12.5"
-  STACK_NAME: "notary-cluster"
-
-  RANCHER_ACCESS_KEY: "707C612461CC3ED6094D"
-  RANCHER_SECRET_KEY: "NiHfenzmuAzQo7P8QdBiKgWLZPzJHJDUrMQqy1th"
-  RANCHER_URL: "http://217.172.12.189:8080/v1/projects/1a19"
-
-before_script:
-  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+image: docker:latest
+services:
+- docker:dind
 
 stages:
-  - test
   - build
-  - publish
+  - test
+  - release
   - deploy
+  
+variables:
+  API_IMAGE: $CI_REGISTRY/notary/api
+  DASHBOARD_IMAGE: $CI_REGISTRY/notary/dashboard
+
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 build:
   stage: build
   script:
-    - docker build --pull -f Dockerfile.api -t "$CI_REGISTRY"/"$API_IMAGE" api
-    - docker build --pull -f Dockerfile.dashboard -t "$CI_REGISTRY"/"$DASHBOARD_IMAGE" dashboard
+    - docker build --pull -f Dockerfile.api -t $API_IMAGE:$CI_COMMIT_REF_NAME api
+    - docker push $API_IMAGE:$CI_COMMIT_REF_NAME
+    - docker build --pull -f Dockerfile.dashboard -t $DASHBOARD_IMAGE:$CI_COMMIT_REF_NAME dashboard
+    - docker push $DASHBOARD_IMAGE:$CI_COMMIT_REF_NAME
 
-publish:
-  stage: publish
+test:
+  stage: test
   script:
-    - docker push "$CI_REGISTRY"/"$API_IMAGE"
-    - docker push "$CI_REGISTRY"/"$DASHBOARD_IMAGE"
+    - docker pull $API_IMAGE:$CI_COMMIT_REF_NAME
+    - docker run $API_IMAGE:$CI_COMMIT_REF_NAME npm run test:batch
+    
+release:
+  stage: release
+  script:
+    - docker pull $API_IMAGE:$CI_COMMIT_REF_NAME
+    - docker tag $API_IMAGE:$CI_COMMIT_REF_NAME $API_IMAGE:latest
+    - docker push $API_IMAGE:latest
+    - docker pull $DASHBOARD_IMAGE:$CI_COMMIT_REF_NAME
+    - docker tag $DASHBOARD_IMAGE:$CI_COMMIT_REF_NAME $DASHBOARD_IMAGE:latest
+    - docker push $DASHBOARD_IMAGE:latest
+  only:
+    - master
 
 deploy:
   stage: deploy
+  variables:
+    RANCHER_COMPOSE_DOWNLOAD: "http://releases.rancher.com/compose/v0.12.5/rancher-compose-linux-amd64-v0.12.5.tar.gz"
+    RANCHER_COMPOSE_TAR: "rancher-compose-linux-amd64-v0.12.5.tar.gz"
+    RANCHER_COMPOSE_DIR: "rancher-compose-v0.12.5"
+    STACK_NAME: "notary-cluster"
   script:
-    - wget $RANCHER_COMPOSE_DOWNLOAD #insecure, use https instead
+    - wget $RANCHER_COMPOSE_DOWNLOAD
     - tar -zxvf $RANCHER_COMPOSE_TAR
     - ls -l ./$RANCHER_COMPOSE_DIR/
     - alias rancher-compose=$PWD/$RANCHER_COMPOSE_DIR/rancher-compose

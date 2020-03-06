@@ -1,12 +1,17 @@
 {
   "name": "dashboard",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
+  },
+  "author": "Giuseppe Raveduto <giuseppe.raveduto@eng.it>",
+  "license" : "MIT",
+  "repository": {
+    "type" : "git",
+    "url" : "https://production.eng.it/gitlab/SEDM/blockchain/notary"
   },
   "dependencies": {
     "axios": "^0.19.2",

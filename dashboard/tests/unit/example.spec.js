@@ -3,7 +3,7 @@ import Card from '@/components/Card.vue';
 
 describe('Home.vue', () => {
   it('renders props.msg when passed', () => {
-    const msg = 'new message';
+    const msg = 'File Name:  SHA256 Hash:  Payment address:  amount:  satoshis address:';
     const wrapper = shallowMount(Card, {
       propsData: { msg },
     });
