@@ -1,5 +1,6 @@
 <template>
-  <b-jumbotron>
+  <span>
+  <b-jumbotron v-if="(document.hash && document.hash.length)">
   <h1>{{title}}</h1>
     <div>File Name: {{document.fileName}}</div>
     <div>SHA256 Hash: {{document.hash}}</div>
@@ -40,6 +41,11 @@
       <div>address: {{document.address}}</div>
   </span>
   </b-jumbotron>
+  <b-jumbotron v-else>
+    <h1>Document not found</h1>
+    {{ error }}
+  </b-jumbotron>
+  </span>
 </template>
 
 <script>
@@ -56,6 +62,7 @@ export default {
   data() {
     return {
       document: {},
+      error: null,
       title: '',
       paymentUri: '',
       transactionDetail: null,
@@ -82,7 +89,9 @@ export default {
             .catch(console.log);
         }
       })
-      .catch(console.log);
+      .catch((error) => {
+        this.error = error;
+      });
   },
 };
 </script>
