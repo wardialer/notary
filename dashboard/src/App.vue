@@ -25,8 +25,8 @@
         </b-nav-form>
       </b-navbar-nav>
     </b-navbar>
-    <b-container>
-      <router-view class="mt-5" />
+    <b-container class="mt-5">
+      <router-view />
     </b-container>
   </div>
 </template>
