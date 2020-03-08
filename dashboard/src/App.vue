@@ -26,7 +26,7 @@
       </b-navbar-nav>
     </b-navbar>
     <b-container class="mt-5">
-      <router-view />
+      <router-view :key="$route.path" />
     </b-container>
   </div>
 </template>
