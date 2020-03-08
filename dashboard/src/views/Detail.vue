@@ -1,5 +1,5 @@
 <template>
-    <card :id="id"></card>
+  <card :id="id"></card>
 </template>
 
 <script>
@@ -7,16 +7,13 @@ import Card from '@/components/Card.vue';
 
 export default {
   name: 'Detail',
-  data() {
-    return {
-      id: '',
-    };
-  },
   components: {
     Card,
   },
-  created() {
-    this.id = this.$route.params.id;
+  computed: {
+    id() {
+      return this.$route.params.id;
+    },
   },
 };
 </script>
