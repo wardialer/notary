@@ -9,15 +9,15 @@
     "pretest:batch": "npm run lint",
     "predev": "npm run lint",
     "test": "jest --watchAll",
-    "test:batch": "jest",
+    "test:batch": "jest --forceExit",
     "dev": "NODE_ENV=development nodemon server.js",
     "start": "NODE_ENV=production node server.js"
   },
   "author": "Giuseppe Raveduto <giuseppe.raveduto@eng.it>",
   "license": "MIT",
   "repository": {
-    "type" : "git",
-    "url" : "https://production.eng.it/gitlab/SEDM/blockchain/notary"
+    "type": "git",
+    "url": "https://production.eng.it/gitlab/SEDM/blockchain/notary"
   },
   "dependencies": {
     "@koa/cors": "^2.2.3",
@@ -39,5 +39,8 @@
     "nodemon": "^2.0.2",
     "pino-pretty": "^3.6.0",
     "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

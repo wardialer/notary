@@ -24,14 +24,8 @@ module.exports = ({ router }) => {
       result = document;
     } else {
       result = await documentLib.save(hash, file);
-
-      /*
-      const uriString = bitcoinLib.createUri(result.amount, result.address);
-      await ctx.render('qr_code', { string: uriString.toString() });
-      */
     }
 
-    // console.log(bitcoinLib.createUri(result.amount, result.address));
     fs.unlink(file.path, (err) => {
       if (err) {
         ctx.throw(500, 'FS problem', { err });
@@ -43,8 +37,12 @@ module.exports = ({ router }) => {
 
   router.get('/:hash', async (ctx) => {
     const { hash } = ctx.params;
-    const result = await Document.findOne({ hash });
-
-    ctx.body = result;
+    const regex = /^[a-f0-9]{64}$/;
+    if (regex.test(hash)) {
+      const result = await Document.findOne({ hash });
+      ctx.body = result;
+    } else {
+      ctx.throw(400, 'Invalid Hash');
+    }
   });
 };

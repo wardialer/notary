@@ -8,10 +8,10 @@
     "lint": "vue-cli-service lint"
   },
   "author": "Giuseppe Raveduto <giuseppe.raveduto@eng.it>",
-  "license" : "MIT",
+  "license": "MIT",
   "repository": {
-    "type" : "git",
-    "url" : "https://production.eng.it/gitlab/SEDM/blockchain/notary"
+    "type": "git",
+    "url": "https://production.eng.it/gitlab/SEDM/blockchain/notary"
   },
   "dependencies": {
     "axios": "^0.19.2",

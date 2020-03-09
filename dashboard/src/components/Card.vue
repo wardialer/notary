@@ -50,7 +50,7 @@
 
 <script>
 import axios from 'axios';
-import bitcore from 'bitcore-lib';
+import { URI } from 'bitcore-lib';
 
 const host = process.env.VUE_APP_API || 'localhost';
 const port = process.env.VUE_APP_API_PORT || 3000;
@@ -76,7 +76,7 @@ export default {
           ? 'The document is notarized'
           : 'Please complete payment to notarize the document';
 
-        this.paymentUri = new bitcore.URI({
+        this.paymentUri = new URI({
           amount: this.document.amount,
           address: this.document.address,
         });
