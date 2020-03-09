@@ -9,7 +9,7 @@
     "pretest:batch": "npm run lint",
     "predev": "npm run lint",
     "test": "jest --watchAll",
-    "test:batch": "jest",
+    "test:batch": "jest --forceExit",
     "dev": "NODE_ENV=development nodemon server.js",
     "start": "NODE_ENV=production node server.js"
   },

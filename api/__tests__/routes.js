@@ -1,11 +1,18 @@
 // routes.test.js
 const request = require('supertest');
 const path = require('path');
-const server = require('../server');
+const mongoose = require('mongoose');
+const app = require('../app');
 const Model = require('../model/document');
 const documentLib = require('../libs/document');
 
+let server;
+beforeAll(() => {
+  server = app.listen(4000);
+});
+
 afterAll(() => {
+  mongoose.connection.close();
   server.close();
 });
 
