@@ -1,7 +1,5 @@
 const explorers = require('bitcore-explorers');
-
-const explorersMod = require.cache[require.resolve('bitcore-explorers')];
-const bitcore = explorersMod.require('bitcore-lib');
+const bitcore = require('bitcore-explorers/node_modules/bitcore-lib');
 
 const keyString = process.env.PRIVATE_KEY;
 const defaultAmount = process.env.DEFAULT_AMOUNT || 25000;
