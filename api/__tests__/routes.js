@@ -1,14 +1,12 @@
 // routes.test.js
 const request = require('supertest');
+const path = require('path');
 const server = require('../server');
 const Model = require('../model/document');
 const documentLib = require('../libs/document');
-const fs = require('fs');
-const path = require('path');
 
 afterAll(() => {
   server.close();
-  console.log('server closed!');
 });
 
 describe('document routes tests', () => {
@@ -24,7 +22,7 @@ describe('document routes tests', () => {
 
   test('get document route GET /document/:hash', async () => {
     const hash = '8578131f4b45dc9ed971c2c6a693b0e0d0e6aaeb2a72c80d1d97bfe9a1b36e77';
-    Model.findOne = jest.fn(({ hash }) => ({ hash }));
+    Model.findOne = jest.fn(() => ({ hash }));
 
     const response = await request(server).get(`/document/${hash}`);
     expect(response.status).toEqual(200);
@@ -34,7 +32,7 @@ describe('document routes tests', () => {
 
   test('400 error on invalid hash route GET /document/:hash', async () => {
     const hash = 'aBc';
-    Model.findOne = jest.fn(({ hash }) => ({ hash }));
+    Model.findOne = jest.fn(() => ({ hash }));
 
     const response = await request(server).get(`/document/${hash}`);
     expect(response.status).toEqual(400);
@@ -51,8 +49,8 @@ describe('document routes tests', () => {
     Model.findOne = jest.fn(() => null);
 
     const response = await request(server)
-    .post('/document/')
-    .attach('document', path.resolve(__dirname, 'dummy'));
+      .post('/document/')
+      .attach('document', path.resolve(__dirname, 'dummy'));
 
     expect(response.status).toEqual(200);
     expect(JSON.parse(response.text)).toEqual(document);
@@ -60,12 +58,12 @@ describe('document routes tests', () => {
     documentLib.save.mockRestore();
   });
 
-  test('retrieve existing document if uploaded again route POST /document/', async () => {;
+  test('retrieve existing document if uploaded again route POST /document/', async () => {
     Model.findOne = jest.fn(({ hash }) => ({ hash }));
 
     const response = await request(server)
-    .post('/document/')
-    .attach('document', path.resolve(__dirname, 'dummy'));
+      .post('/document/')
+      .attach('document', path.resolve(__dirname, 'dummy'));
 
     expect(response.status).toEqual(200);
     expect(JSON.parse(response.text)).toEqual({ hash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' });
