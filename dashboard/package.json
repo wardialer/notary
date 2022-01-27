@@ -14,8 +14,8 @@
     "url": "https://production.eng.it/gitlab/SEDM/blockchain/notary"
   },
   "dependencies": {
-    "axios": "^0.19.2",
-    "bitcore-lib": "^8.16.0",
+    "axios": "^0.21.3",
+    "bitcore-lib": "^8.22.2",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.5.0",
     "core-js": "^3.6.4",
