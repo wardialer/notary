@@ -1,4 +1,4 @@
-FROM node
+FROM node:17.4-slim
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NPM_CONFIG_REGISTRY "http://registry.npmjs.org"
 
