@@ -22,7 +22,7 @@
   "dependencies": {
     "@koa/cors": "^2.2.3",
     "bitcore-explorers": "^1.0.1",
-    "bitcore-lib": "^8.22.2",
+    "bitcore-lib": "^8.25.25",
     "cron": "^1.8.2",
     "dotenv": "^8.2.0",
     "koa": "^2.11.0",
