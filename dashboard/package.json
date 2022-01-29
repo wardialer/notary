@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "axios": "^0.21.3",
-    "bitcore-lib": "^8.22.2",
+    "bitcore-lib": "^8.25.25",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.5.0",
     "core-js": "^3.6.4",
