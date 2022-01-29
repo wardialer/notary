@@ -24,7 +24,7 @@
     "bitcore-explorers": "^1.0.1",
     "bitcore-lib": "^8.22.2",
     "cron": "^1.8.2",
-    "dotenv": "^8.2.0",
+    "dotenv": "^8.6.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
     "koa-pino-logger": "^2.1.3",
